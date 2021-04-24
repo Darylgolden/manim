@@ -6,36 +6,22 @@ __all__ = ["VectorScene", "LinearTransformationScene"]
 import numpy as np
 
 from .. import config
-from ..constants import *
 from ..animation.animation import Animation
-from ..animation.creation import Create
-from ..animation.creation import Write
+from ..animation.creation import Create, Write
 from ..animation.fading import FadeOut
 from ..animation.growing import GrowArrow
-from ..animation.transform import ApplyFunction
-from ..animation.transform import ApplyPointwiseFunction
-from ..animation.transform import Transform
-from ..mobject.coordinate_systems import Axes
-from ..mobject.coordinate_systems import NumberPlane
-from ..mobject.geometry import Arrow
-from ..mobject.geometry import Dot
-from ..mobject.geometry import Line
-from ..mobject.geometry import Rectangle
-from ..mobject.geometry import Vector
-from ..mobject.matrix import Matrix
-from ..mobject.matrix import VECTOR_LABEL_SCALE_FACTOR
-from ..mobject.matrix import vector_coordinate_label
+from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
+from ..constants import *
+from ..mobject.coordinate_systems import Axes, NumberPlane
+from ..mobject.geometry import Arrow, Dot, Line, Rectangle, Vector
+from ..mobject.matrix import VECTOR_LABEL_SCALE_FACTOR, Matrix, vector_coordinate_label
 from ..mobject.mobject import Mobject
-from ..mobject.svg.tex_mobject import MathTex
-from ..mobject.svg.tex_mobject import Tex
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.svg.tex_mobject import MathTex, Tex
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
-from ..utils.color import GREEN_C, RED_C, BLUE_D, WHITE, YELLOW, GREY, LIGHT_GREY
-from ..utils.rate_functions import rush_from
-from ..utils.rate_functions import rush_into
+from ..utils.color import BLUE_D, GREEN_C, GREY, LIGHT_GREY, RED_C, WHITE, YELLOW
+from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
-from ..utils.space_ops import get_norm
 
 X_COLOR = GREEN_C
 Y_COLOR = RED_C
@@ -304,7 +290,7 @@ class VectorScene(Scene):
 
         if at_tip:
             vect = vector.get_vector()
-            vect /= get_norm(vect)
+            vect /= np.linalg.norm(vect)
             label.next_to(vector.get_end(), vect, buff=SMALL_BUFF)
         else:
             angle = vector.get_angle()
@@ -954,7 +940,7 @@ class LinearTransformationScene(VectorScene):
         """
         for v in self.moving_vectors:
             v.target = Vector(func(v.get_end()), color=v.get_color())
-            norm = get_norm(v.target.get_end())
+            norm = np.linalg.norm(v.target.get_end())
             if norm < 0.1:
                 v.target.get_tip().scale_in_place(norm)
         return self.get_piece_movement(self.moving_vectors)

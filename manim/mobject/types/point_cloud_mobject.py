@@ -3,14 +3,21 @@
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 
+import numpy as np
+
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
-from ...utils.color import color_gradient, YELLOW_C, WHITE, BLACK, YELLOW
-from ...utils.color import color_to_rgba
-from ...utils.color import rgba_to_color
+from ...utils.color import (
+    BLACK,
+    WHITE,
+    YELLOW,
+    YELLOW_C,
+    color_gradient,
+    color_to_rgba,
+    rgba_to_color,
+)
 from ...utils.iterables import stretch_array_to_length
-from ...utils.space_ops import get_norm
 
 
 class PMobject(Mobject):
@@ -64,17 +71,6 @@ class PMobject(Mobject):
         self.rgbas = np.array(
             list(map(color_to_rgba, color_gradient(colors, len(self.points))))
         )
-        return self
-
-        start_rgba, end_rgba = list(map(color_to_rgba, [start_color, end_color]))
-        for mob in self.family_members_with_points():
-            num_points = mob.get_num_points()
-            mob.rgbas = np.array(
-                [
-                    interpolate(start_rgba, end_rgba, alpha)
-                    for alpha in np.arange(num_points) / float(num_points)
-                ]
-            )
         return self
 
     def set_colors_by_radial_gradient(
@@ -186,7 +182,7 @@ class Mobject1D(PMobject):
 
     def add_line(self, start, end, color=None):
         start, end = list(map(np.array, [start, end]))
-        length = get_norm(end - start)
+        length = np.linalg.norm(end - start)
         if length == 0:
             points = [start]
         else:

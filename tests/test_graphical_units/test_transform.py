@@ -1,8 +1,9 @@
 import pytest
 
 from manim import *
-from ..utils.testing_utils import get_scenes_to_test
+
 from ..utils.GraphicalUnitTester import GraphicalUnitTester
+from ..utils.testing_utils import get_scenes_to_test
 
 
 class TransformTest(Scene):
@@ -129,6 +130,13 @@ class FadeInAndOutTest(Scene):
         annotation.become(Square(color=RED).rotate(PI / 4))
         self.add(annotation)
         self.play(FadeOut(square))
+
+
+class MatchPointsScene(Scene):
+    def construct(self):
+        circ = Circle(fill_color=RED, fill_opacity=0.8)
+        square = Square(fill_color=BLUE, fill_opacity=0.2)
+        self.play(circ.animate.match_points(square))
 
 
 class AnimationBuilderTest(Scene):

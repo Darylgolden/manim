@@ -2,12 +2,12 @@
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
+import numpy as np
+
 from ..constants import *
-from ..mobject.types.vectorized_mobject import VMobject
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..utils.color import BLUE_B, BLUE_D, BLUE_E, GREY_BROWN, WHITE
 from ..utils.rate_functions import smooth
-from ..utils.space_ops import get_norm
-from ..utils.color import BLUE_D, BLUE_B, BLUE_E, GREY_BROWN, WHITE
 
 
 class AnimatedBoundary(VGroup):
@@ -132,6 +132,6 @@ class TracedPath(VMobject):
 
             # Second to last point
             nppcc = self.n_points_per_cubic_curve
-            dist = get_norm(new_point - self.points[-nppcc])
+            dist = np.linalg.norm(new_point - self.points[-nppcc])
             if dist >= self.min_distance_to_new_point:
                 self.add_line_to(new_point)
