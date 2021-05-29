@@ -3,6 +3,7 @@ from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
 
 from .. import __version__, config
+from .. import logger
 
 
 class Window(PygletWindow):
@@ -24,8 +25,9 @@ class Window(PygletWindow):
         mglw.activate_context(window=self)
         self.timer = Timer()
         self.config = mglw.WindowConfig(ctx=self.ctx, wnd=self, timer=self.timer)
-        self.timer.start()
 
+        self.timer.start()
+        logger.debug(self.ctx.error)
         self.swap_buffers()
 
     # Delegate event handling to scene.

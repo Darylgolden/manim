@@ -280,6 +280,7 @@ class SceneFileWriter(object):
         """
         if config.renderer == "opengl":
             renderer = frame_or_renderer
+            logger.debug(renderer.window.ctx.error)
             self.writing_process.stdin.write(
                 renderer.get_raw_frame_buffer_object_data()
             )

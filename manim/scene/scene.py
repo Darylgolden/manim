@@ -198,7 +198,9 @@ class Scene(Container):
         """
         self.setup()
         try:
+            logger.debug(self.renderer.window.ctx.error)
             self.construct()
+            logger.debug(self.renderer.window.ctx.error)
         except EndSceneEarlyException:
             pass
         except RerunSceneException as e:
@@ -952,6 +954,7 @@ class Scene(Container):
         )
         for t in self.time_progression:
             self.update_to_time(t)
+            logger.debug(self.renderer.window.ctx.error)
             if not skip_rendering and not self.skip_animation_preview:
                 self.renderer.render(self, t, self.moving_mobjects)
             if self.stop_condition is not None and self.stop_condition():

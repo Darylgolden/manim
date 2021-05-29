@@ -67,8 +67,10 @@ float angle_between_vectors(vec2 v1, vec2 v2){
     float v1_norm = length(v1);
     float v2_norm = length(v2);
     if(v1_norm == 0 || v2_norm == 0) return 0.0;
+    vec2 v1_normalize = v1 / v1_norm;
+    vec2 v2_normalize = v2 / v2_norm;
     float dp = dot(v1, v2) / (v1_norm * v2_norm);
-    float angle = acos(clamp(dp, -1.0, 1.0));
+    float angle = atan(length(v1_normalize - v2_normalize), length(v1_normalize + v2_normalize));
     float sn = sign(cross2d(v1, v2));
     return sn * angle;
 }
