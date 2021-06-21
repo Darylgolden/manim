@@ -26,10 +26,7 @@ def validate_resolution(ctx, param, value):
     if value:
         try:
             start, end = map(int, re.split(";|,|-", value))
-            return (
-                start,
-                end,
-            )
+            return (start, end)
         except Exception:
             logger.error("Resolution option is invalid.")
             exit()
@@ -51,11 +48,8 @@ render_options = option_group(
         help="Render all scenes in the input file.",
     ),
     option(
-        "-f",
         "--format",
-        "file_format",
-        default="mp4",
-        type=click.Choice(["png", "gif", "mp4"], case_sensitive=False),
+        type=click.Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
     ),
     option("-s", "--save_last_frame", is_flag=True),
     option(
@@ -105,6 +99,27 @@ render_options = option_group(
         default=None,
         type=click.Path(),
         help="The path to the WebGL frontend.",
+    ),
+    option(
+        "-g",
+        "--save_pngs",
+        is_flag=True,
+        default=None,
+        help="Save each frame as png (Deprecated).",
+    ),
+    option(
+        "-i",
+        "--save_as_gif",
+        default=None,
+        is_flag=True,
+        help="Save as a gif (Deprecated).",
+    ),
+    option(
+        "-s",
+        "--save_last_frame",
+        default=None,
+        is_flag=True,
+        help="Save last frame as png (Deprecated).",
     ),
     option(
         "-t", "--transparent", is_flag=True, help="Render scenes with alpha channel."

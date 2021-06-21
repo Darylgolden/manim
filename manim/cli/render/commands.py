@@ -8,15 +8,13 @@ can specify options, and arguments for the render command.
 import json
 import sys
 from pathlib import Path
-from textwrap import dedent
 
 import click
 import cloup
 import requests
 
-from ... import __version__, config, console, logger
+from ... import __version__, config, console, error_console, logger
 from ...constants import CONTEXT_SETTINGS, EPILOG
-from ...utils.exceptions import RerunSceneException
 from ...utils.module_ops import scene_classes_from_file
 from .ease_of_access_options import ease_of_access_options
 from .global_options import global_options
@@ -25,7 +23,7 @@ from .render_options import render_options
 
 
 @cloup.command(
-    context_settings=CONTEXT_SETTINGS,
+    context_settings=None,
     epilog=EPILOG,
 )
 @click.argument("file", type=Path, required=True)
@@ -34,9 +32,7 @@ from .render_options import render_options
 @output_options
 @render_options
 @ease_of_access_options
-@click.pass_context
 def render(
-    ctx,
     **args,
 ):
     """Render SCENE(S) from the input FILE.
@@ -45,43 +41,35 @@ def render(
 
     SCENES is an optional list of scenes in the file.
     """
-    for scene in args["scene_names"]:
-        if str(scene).startswith("-"):
-            logger.warning(
-                dedent(
-                    """\
-                Manim Community has moved to Click for the CLI.
-
-                This means that options in the CLI are provided BEFORE the positional
-                arguments for your FILE and SCENE(s):
-                `manim render [OPTIONS] [FILE] [SCENES]...`
-
-                For example:
-                New way - `manim -p -ql file.py SceneName1 SceneName2 ...`
-                Old way - `manim file.py SceneName1 SceneName2 ... -p -ql`
-
-                To see the help page for the new available options, run:
-                `manim render -h`
-                """
-                )
-            )
-            sys.exit()
 
     if args["use_opengl_renderer"]:
         logger.warning(
             "--use_opengl_renderer is deprecated, please use --renderer=opengl instead!"
         )
-        renderer = "opengl"
+        args["renderer"] = "opengl"
 
     if args["use_webgl_renderer"]:
         logger.warning(
             "--use_webgl_renderer is deprecated, please use --renderer=webgl instead!"
         )
-        renderer = "webgl"
+        args["renderer"] = "webgl"
 
     if args["use_webgl_renderer"] and args["use_opengl_renderer"]:
         logger.warning("You may select only one renderer!")
         sys.exit()
+
+    if args["save_as_gif"]:
+        logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
+        args["format"] = "gif"
+
+    if args["save_pngs"]:
+        logger.warning("--save_pngs is deprecated, please use --format=png instead!")
+        args["format"] = "png"
+
+    if args["show_in_file_browser"]:
+        logger.warning(
+            "The short form of show_in_file_browser is deprecated and will be moved to support --format."
+        )
 
     class ClickArgs:
         def __init__(self, args):
@@ -124,7 +112,8 @@ def render(
                     else:
                         break
             except Exception:
-                console.print_exception()
+                error_console.print_exception()
+                sys.exit(1)
     elif config.renderer == "webgl":
         try:
             from manim.grpc.impl import frame_server_impl
@@ -137,14 +126,16 @@ def render(
                 "Dependencies for the WebGL render are missing. Run "
                 "pip install manim[webgl_renderer] to install them."
             )
-            console.print_exception()
+            error_console.print_exception()
+            sys.exit(1)
     else:
         for SceneClass in scene_classes_from_file(file):
             try:
                 scene = SceneClass()
                 scene.render()
             except Exception:
-                console.print_exception()
+                error_console.print_exception()
+                sys.exit(1)
 
     if config.notify_outdated_version:
         manim_info_url = "https://pypi.org/pypi/manim/json"
