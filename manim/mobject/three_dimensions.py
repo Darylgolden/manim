@@ -292,7 +292,7 @@ class Sphere(ParametricSurface):
         v_range=[0, TAU],
         **kwargs
     ):
-        super().__init__(
+        ParametricSurface.__init__(
             self,
             self.func,
             resolution=resolution,
@@ -340,7 +340,7 @@ class Dot3D(Sphere):
     """
 
     def __init__(self, point=ORIGIN, radius=DEFAULT_DOT_RADIUS, color=WHITE, **kwargs):
-        super().__init__(self, center=point, radius=radius, **kwargs)
+        Sphere.__init__(self, center=point, radius=radius, **kwargs)
         self.set_color(color)
 
 
@@ -393,10 +393,10 @@ class Prism(Cube):
 
     def __init__(self, dimensions=[3, 2, 1], **kwargs):
         self.dimensions = dimensions
-        super().__init__(self, **kwargs)
+        Cube.__init__(self, **kwargs)
 
     def generate_points(self):
-        super().generate_points(self)
+        Cube.generate_points(self)
         for dim, value in enumerate(self.dimensions):
             self.rescale_to_fit(value, dim, stretch=True)
 
@@ -452,7 +452,7 @@ class Cone(ParametricSurface):
         self.direction = direction
         self.theta = PI - np.arctan(base_radius / height)
 
-        super().__init__(
+        ParametricSurface.__init__(
             self,
             self.func,
             v_range=v_range,
@@ -574,7 +574,7 @@ class Cylinder(ParametricSurface):
     ):
         self._height = height
         self.radius = radius
-        super().__init__(
+        ParametricSurface.__init__(
             self,
             self.func,
             resolution=resolution,
@@ -708,7 +708,7 @@ class Line3D(Cylinder):
         # start and end, if they're mobjects
         self.start = self.pointify(start, self.direction)
         self.end = self.pointify(end, -self.direction)
-        super().__init__(
+        Cylinder.__init__(
             self,
             height=np.linalg.norm(self.vect),
             radius=self.thickness,
@@ -772,7 +772,7 @@ class Arrow3D(Line3D):
         color=WHITE,
         **kwargs
     ):
-        super().__init__(
+        Line3D.__init__(
             self, start=start, end=end, thickness=thickness, color=color, **kwargs
         )
 
@@ -825,7 +825,7 @@ class Torus(ParametricSurface):
     ):
         self.R = major_radius
         self.r = minor_radius
-        super().__init__(
+        ParametricSurface.__init__(
             self,
             self.func,
             u_range=u_range,
